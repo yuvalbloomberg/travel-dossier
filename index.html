@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Travel Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12141c;
+    --surface:#1b1e29;
+    --surface-2:#232837;
+    --surface-3:#2b3143;
+    --text:#edeae2;
+    --muted:#8b8d98;
+    --muted-2:#5f6270;
+    --gold:#c9a227;
+    --gold-dim:rgba(201,162,39,0.18);
+    --teal:#3d8c7c;
+    --teal-dim:rgba(61,140,124,0.16);
+    --red:#c1584a;
+    --red-dim:rgba(193,88,74,0.16);
+    --border:rgba(237,234,226,0.10);
+    --border-strong:rgba(237,234,226,0.18);
+    --radius:10px;
+    --shadow:0 8px 24px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(201,162,39,0.06), transparent 60%),
+      radial-gradient(1000px 500px at 100% 0%, rgba(61,140,124,0.07), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .serif{font-family:'Spectral',serif;}
+  a{color:var(--gold);}
+
+  /* ---------- layout ---------- */
+  .app{display:flex;min-height:100vh;}
+  .sidebar{
+    width:280px;flex-shrink:0;background:var(--surface);
+    border-right:1px solid var(--border);
+    display:flex;flex-direction:column;
+    padding:20px 16px;gap:18px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:0 4px;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:50%;
+    border:2px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Spectral',serif;font-weight:700;color:var(--gold);
+    font-size:15px;flex-shrink:0;
+  }
+  .brand-name{font-family:'Spectral',serif;font-size:19px;font-weight:600;letter-spacing:0.2px;}
+  .brand-sub{font-size:11px;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;}
+
+  .side-section{display:flex;flex-direction:column;gap:6px;}
+  .side-label{
+    font-size:11px;text-transform:uppercase;letter-spacing:0.8px;
+    color:var(--muted-2);padding:0 8px;margin-bottom:2px;
+  }
+  .trip-item{
+    display:flex;flex-direction:column;gap:2px;
+    padding:10px 10px;border-radius:8px;cursor:pointer;
+    border:1px solid transparent;
+  }
+  .trip-item:hover{background:var(--surface-2);}
+  .trip-item.active{background:var(--surface-2);border-color:var(--border-strong);}
+  .trip-item-name{font-size:14px;font-weight:600;}
+  .trip-item-dates{font-size:11.5px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+
+  .btn{
+    border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);
+    padding:9px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;
+    font-weight:500;transition:background .15s,border-color .15s;
+  }
+  .btn:hover{background:var(--surface-3);}
+  .btn-gold{border-color:var(--gold);color:var(--gold);}
+  .btn-gold:hover{background:var(--gold-dim);}
+  .btn-teal{border-color:var(--teal);color:var(--teal);}
+  .btn-teal:hover{background:var(--teal-dim);}
+  .btn-red{border-color:var(--red);color:var(--red);}
+  .btn-red:hover{background:var(--red-dim);}
+  .btn-block{width:100%;}
+  .btn-sm{padding:5px 10px;font-size:12px;}
+  .btn-ghost{background:transparent;border-color:transparent;color:var(--muted);}
+  .btn-ghost:hover{background:var(--surface-2);color:var(--text);}
+
+  .sidebar-footer{margin-top:auto;display:flex;flex-direction:column;gap:8px;}
+
+  .main{flex:1;padding:28px 40px;overflow-y:auto;max-height:100vh;}
+  .main-inner{max-width:960px;margin:0 auto;}
+
+  .empty-state{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    height:70vh;text-align:center;color:var(--muted);gap:14px;
+  }
+  .empty-state h2{font-family:'Spectral',serif;color:var(--text);font-weight:600;}
+
+  /* ---------- trip header ---------- */
+  .trip-header{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    padding-bottom:20px;margin-bottom:22px;border-bottom:1px solid var(--border);
+    position:relative;
+  }
+  .trip-title{font-family:'Spectral',serif;font-size:30px;font-weight:700;margin:0 0 6px;}
+  .trip-dates{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);}
+  .traveler-chips{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;}
+  .chip{
+    font-size:11.5px;padding:4px 10px;border-radius:20px;
+    background:var(--surface-2);border:1px solid var(--border-strong);color:var(--muted);
+  }
+
+  /* ---------- country tabs (passport stamp style) ---------- */
+  .country-tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;}
+  .country-tab{
+    display:flex;align-items:center;gap:8px;padding:8px 14px 8px 8px;
+    border-radius:30px;border:1px solid var(--border-strong);background:var(--surface);
+    cursor:pointer;transition:border-color .15s,background .15s;
+  }
+  .country-tab:hover{background:var(--surface-2);}
+  .country-tab.active{border-color:var(--gold);background:var(--gold-dim);}
+  .stamp{
+    width:26px;height:26px;border-radius:50%;flex-shrink:0;
+    border:2px solid var(--muted-2);
+    display:flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;
+    color:var(--muted-2);transition:all .2s;
+  }
+  .stamp.complete{
+    border-color:var(--teal);color:var(--teal);
+    box-shadow:0 0 0 2px var(--teal-dim);
+    transform:rotate(-8deg);
+  }
+  .country-tab-name{font-size:13.5px;font-weight:600;}
+  .add-country-tab{
+    display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:30px;
+    border:1px dashed var(--border-strong);color:var(--muted);cursor:pointer;font-size:13px;
+  }
+  .add-country-tab:hover{color:var(--text);border-color:var(--muted);}
+
+  /* ---------- section cards ---------- */
+  .section{margin-bottom:28px;}
+  .section-head{
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;
+  }
+  .section-title{
+    font-family:'Spectral',serif;font-size:17px;font-weight:600;
+    display:flex;align-items:center;gap:8px;
+  }
+  .section-title .count{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);
+    background:var(--surface-2);padding:2px 7px;border-radius:20px;
+  }
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:14px 16px;margin-bottom:10px;position:relative;
+  }
+  .card-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .card-main{flex:1;min-width:0;}
+  .card-title-line{font-weight:600;font-size:14.5px;margin-bottom:3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .card-sub{font-size:12.5px;color:var(--muted);line-height:1.6;}
+  .badge{
+    font-size:10.5px;padding:2px 8px;border-radius:20px;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.4px;
+  }
+  .badge-in{background:var(--teal-dim);color:var(--teal);}
+  .badge-out{background:var(--gold-dim);color:var(--gold);}
+  .badge-domestic{background:var(--surface-3);color:var(--muted);}
+  .badge-done{background:var(--teal-dim);color:var(--teal);}
+  .badge-todo{background:var(--red-dim);color:var(--red);}
+  .card-actions{display:flex;gap:6px;flex-shrink:0;}
+  .icon-btn{
+    width:26px;height:26px;border-radius:6px;border:1px solid var(--border);
+    background:transparent;color:var(--muted);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:13px;
+  }
+  .icon-btn:hover{background:var(--surface-2);color:var(--text);}
+
+  .empty-row{
+    color:var(--muted-2);font-size:13px;padding:16px;text-align:center;
+    border:1px dashed var(--border);border-radius:var(--radius);
+  }
+
+  /* ---------- forms / modal ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(10,11,16,0.65);
+    display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;
+  }
+  .modal{
+    background:var(--surface);border:1px solid var(--border-strong);border-radius:14px;
+    width:100%;max-width:460px;max-height:88vh;overflow-y:auto;
+    padding:24px;box-shadow:var(--shadow);
+  }
+  .modal h3{font-family:'Spectral',serif;margin:0 0 16px;font-size:19px;}
+  .field{margin-bottom:13px;}
+  .field label{
+    display:block;font-size:12px;color:var(--muted);margin-bottom:5px;
+    text-transform:uppercase;letter-spacing:0.4px;
+  }
+  .field input, .field select, .field textarea{
+    width:100%;background:var(--surface-2);border:1px solid var(--border-strong);
+    color:var(--text);padding:9px 10px;border-radius:7px;font-family:inherit;font-size:13.5px;
+  }
+  .field textarea{resize:vertical;min-height:56px;}
+  .field-row{display:flex;gap:10px;}
+  .field-row > *{flex:1;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
+  .file-drop{
+    border:1px dashed var(--border-strong);border-radius:8px;padding:14px;text-align:center;
+    font-size:12.5px;color:var(--muted);cursor:pointer;
+  }
+  .file-drop:hover{border-color:var(--gold);color:var(--gold);}
+  .file-chip{
+    display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);
+    border:1px solid var(--border-strong);padding:4px 9px;border-radius:20px;font-size:12px;margin-top:8px;
+  }
+
+  .top-toast{
+    position:fixed;top:16px;left:50%;transform:translateX(-50%);
+    background:var(--surface-3);border:1px solid var(--border-strong);
+    padding:9px 16px;border-radius:20px;font-size:12.5px;z-index:100;
+    box-shadow:var(--shadow);
+  }
+  .top-toast.error{border-color:var(--red);color:var(--red);}
+
+  ::-webkit-scrollbar{width:9px;height:9px;}
+  ::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:20px;}
+
+  @media(max-width:800px){
+    .app{flex-direction:column;}
+    .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--border);flex-direction:row;overflow-x:auto;}
+    .main{padding:20px;}
+  }
+</style>
+</head>
+<body>
+
+<div id="setupOverlay" class="overlay" style="display:none;">
+  <div class="modal">
+    <h3>Connect Travel Dossier</h3>
+    <p style="font-size:13px;color:var(--muted);margin-top:-8px;">
+      Enter your Cloudflare Worker URL and access token (set once, stored only in this browser).
+    </p>
+    <div class="field">
+      <label>Worker URL</label>
+      <input id="setupUrl" placeholder="https://travel-dossier.yourname.workers.dev">
+    </div>
+    <div class="field">
+      <label>Access token</label>
+      <input id="setupToken" type="password" placeholder="API_SECRET value">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-gold" onclick="saveSetup()">Connect</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">TD</div>
+      <div>
+        <div class="brand-name">Travel Dossier</div>
+        <div class="brand-sub">Trip records</div>
+      </div>
+    </div>
+
+    <div class="side-section">
+      <div class="side-label">Trips</div>
+      <div id="tripList"></div>
+    </div>
+    <button class="btn btn-gold btn-block" onclick="openTripModal()">+ New trip</button>
+
+    <div class="side-section">
+      <div class="side-label">Travelers</div>
+      <div id="travelerChipList" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+    </div>
+    <button class="btn btn-block" onclick="openTravelerModal()">+ Manage travelers</button>
+
+    <div class="sidebar-footer">
+      <button class="btn btn-ghost btn-block" onclick="openSetup(true)">Connection settings</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="main-inner" id="mainContent"></div>
+  </div>
+</div>
+
+<script>
+/* ==================== STATE & PERSISTENCE ==================== */
+let state = { travelers: [], trips: [] };
+let activeTripId = null;
+let activeCountryId = null;
+let cfg = { url: localStorage.getItem('td_url') || '', token: localStorage.getItem('td_token') || '' };
+let saveTimer = null;
+
+function uid(){ return crypto.randomUUID ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2); }
+
+function toast(msg, isError){
+  const t = document.createElement('div');
+  t.className = 'top-toast' + (isError ? ' error' : '');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2600);
+}
+
+async function apiFetch(path, opts={}){
+  if(!cfg.url || !cfg.token){ openSetup(false); throw new Error('not configured'); }
+  const headers = Object.assign({ 'Authorization': 'Bearer ' + cfg.token }, opts.headers || {});
+  const res = await fetch(cfg.url.replace(/\/$/,'') + path, Object.assign({}, opts, { headers }));
+  if(res.status === 401){ toast('Invalid token — check connection settings', true); throw new Error('unauthorized'); }
+  if(!res.ok){ const t = await res.text(); throw new Error(t || res.statusText); }
+  return res;
+}
+
+async function loadState(){
+  try{
+    const res = await apiFetch('/api/data');
+    const data = await res.json();
+    if(data) state = data;
+  }catch(e){
+    console.warn('load failed', e);
+  }
+  render();
+}
+
+function queueSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveState, 500);
+}
+
+async function saveState(){
+  try{
+    await apiFetch('/api/data', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(state)
+    });
+  }catch(e){
+    toast('Save failed: ' + e.message, true);
+  }
+}
+
+/* ==================== SETUP ==================== */
+function openSetup(prefill){
+  document.getElementById('setupUrl').value = prefill ? cfg.url : '';
+  document.getElementById('setupToken').value = prefill ? cfg.token : '';
+  document.getElementById('setupOverlay').style.display = 'flex';
+}
+function saveSetup(){
+  const url = document.getElementById('setupUrl').value.trim();
+  const token = document.getElementById('setupToken').value.trim();
+  if(!url || !token){ toast('Enter both fields', true); return; }
+  cfg = { url, token };
+  localStorage.setItem('td_url', url);
+  localStorage.setItem('td_token', token);
+  document.getElementById('setupOverlay').style.display = 'none';
+  loadState();
+}
+if(!cfg.url || !cfg.token){ openSetup(false); } else { loadState(); }
+
+/* ==================== FILE HELPERS ==================== */
+async function uploadFile(file){
+  const fd = new FormData();
+  fd.append('file', file);
+  const res = await apiFetch('/api/upload', { method:'POST', body: fd });
+  return await res.json(); // {fileId, filename, contentType, size}
+}
+async function viewFile(fileId, filename){
+  try{
+    const res = await apiFetch('/api/file/' + fileId);
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
+  }catch(e){ toast('Could not open file: ' + e.message, true); }
+}
+async function deleteFile(fileId){
+  try{ await apiFetch('/api/file/' + fileId, { method:'DELETE' }); }catch(e){}
+}
+
+/* ==================== DATA HELPERS ==================== */
+function getTrip(id){ return state.trips.find(t=>t.id===id); }
+function getCountry(trip, id){ return trip.countries.find(c=>c.id===id); }
+
+function countryComplete(c){
+  return c.flights.length>0 && c.hotels.length>0 && c.forms.every(f=>f.status==='done') && (c.forms.length===0 || c.forms.some(f=>f.status==='done'));
+}
+function countryCode(name){
+  return (name||'??').replace(/[^A-Za-z]/g,'').slice(0,3).toUpperCase() || '??';
+}
+
+/* ==================== RENDER: SIDEBAR ==================== */
+function renderSidebar(){
+  const list = document.getElementById('tripList');
+  list.innerHTML = '';
+  state.trips.slice().sort((a,b)=> (a.startDate||'').localeCompare(b.startDate||'')).forEach(t=>{
+    const div = document.createElement('div');
+    div.className = 'trip-item' + (t.id===activeTripId ? ' active' : '');
+    div.onclick = ()=>{ activeTripId = t.id; activeCountryId = (t.countries[0]||{}).id || null; render(); };
+    div.innerHTML = `<div class="trip-item-name">${esc(t.name)}</div>
+      <div class="trip-item-dates">${esc(t.startDate||'—')} → ${esc(t.endDate||'—')}</div>`;
+    list.appendChild(div);
+  });
+  if(state.trips.length===0){
+    list.innerHTML = '<div style="font-size:12.5px;color:var(--muted-2);padding:8px;">No trips yet</div>';
+  }
+
+  const travList = document.getElementById('travelerChipList');
+  travList.innerHTML = '';
+  state.travelers.forEach(tr=>{
+    const c = document.createElement('div');
+    c.className = 'chip';
+    c.textContent = tr.name;
+    travList.appendChild(c);
+  });
+  if(state.travelers.length===0){
+    travList.innerHTML = '<div style="font-size:12px;color:var(--muted-2);">No travelers added</div>';
+  }
+}
+
+/* ==================== RENDER: MAIN ==================== */
+function render(){
+  renderSidebar();
+  const main = document.getElementById('mainContent');
+  const trip = getTrip(activeTripId);
+  if(!trip){
+    main.innerHTML = `<div class="empty-state">
+      <h2>No trip selected</h2>
+      <div>Create a trip to start logging flights, hotels, arrival forms and documents.</div>
+      <button class="btn btn-gold" onclick="openTripModal()">+ New trip</button>
+    </div>`;
+    return;
+  }
+  if(!activeCountryId && trip.countries.length){ activeCountryId = trip.countries[0].id; }
+  const country = getCountry(trip, activeCountryId);
+
+  const travelerChips = (trip.travelerIds||[]).map(id=>{
+    const t = state.travelers.find(x=>x.id===id);
+    return t ? `<span class="chip">${esc(t.name)}</span>` : '';
+  }).join('') || `<span class="chip" style="opacity:.6">No travelers assigned</span>`;
+
+  main.innerHTML = `
+    <div class="trip-header">
+      <div>
+        <h1 class="trip-title">${esc(trip.name)}</h1>
+        <div class="trip-dates">${esc(trip.startDate||'—')} → ${esc(trip.endDate||'—')}</div>
+        <div class="traveler-chips">${travelerChips}</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-sm" onclick="openTripModal('${trip.id}')">Edit trip</button>
+        <button class="btn btn-sm btn-red" onclick="deleteTrip('${trip.id}')">Delete</button>
+      </div>
+    </div>
+
+    <div class="country-tabs" id="countryTabs"></div>
+    <div id="countryPanel"></div>
+  `;
+
+  const tabsEl = document.getElementById('countryTabs');
+  trip.countries.forEach(c=>{
+    const el = document.createElement('div');
+    el.className = 'country-tab' + (c.id===activeCountryId ? ' active' : '');
+    el.onclick = ()=>{ activeCountryId = c.id; render(); };
+    el.innerHTML = `<div class="stamp ${countryComplete(c)?'complete':''}">${esc(countryCode(c.name))}</div>
+      <div class="country-tab-name">${esc(c.name)}</div>`;
+    tabsEl.appendChild(el);
+  });
+  const addTab = document.createElement('div');
+  addTab.className = 'add-country-tab';
+  addTab.textContent = '+ Add country / stop';
+  addTab.onclick = ()=>openCountryModal(trip.id);
+  tabsEl.appendChild(addTab);
+
+  if(country){
+    renderCountryPanel(trip, country);
+  } else {
+    document.getElementById('countryPanel').innerHTML = `<div class="empty-row">Add a country or stop to this trip to begin.</div>`;
+  }
+}
+
+function renderCountryPanel(trip, c){
+  const panel = document.getElementById('countryPanel');
+  panel.innerHTML = `
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px;">
+      <button class="btn btn-sm" onclick="openCountryModal('${trip.id}','${c.id}')">Edit stop</button>
+      <button class="btn btn-sm btn-red" onclick="deleteCountry('${trip.id}','${c.id}')">Remove stop</button>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">✈ Flights <span class="count">${c.flights.length}</span></div>
+        <button class="btn btn-sm btn-gold" onclick="openFlightModal('${trip.id}','${c.id}')">+ Add flight</button>
+      </div>
+      <div id="flightsList"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">🏨 Hotels <span class="count">${c.hotels.length}</span></div>
+        <button class="btn btn-sm btn-gold" onclick="openHotelModal('${trip.id}','${c.id}')">+ Add hotel</button>
+      </div>
+      <div id="hotelsList"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">📝 Arrival forms &amp; links <span class="count">${c.forms.length}</span></div>
+        <button class="btn btn-sm btn-gold" onclick="openFormModal('${trip.id}','${c.id}')">+ Add form/link</button>
+      </div>
+      <div id="formsList"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">📎 Documents <span class="count">${c.documents.length}</span></div>
+        <button class="btn btn-sm btn-gold" onclick="openDocModal('${trip.id}','${c.id}')">+ Add document</button>
+      </div>
+      <div id="docsList"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title" style="margin-bottom:8px;">🗒 Notes</div>
+      <textarea style="width:100%;min-height:70px;background:var(--surface);border:1px solid var(--border);
+        color:var(--text);border-radius:var(--radius);padding:12px;font-family:inherit;font-size:13.5px;"
+        onchange="updateCountryNotes('${trip.id}','${c.id}', this.value)">${esc(c.notes||'')}</textarea>
+    </div>
+  `;
+
+  const flightsList = document.getElementById('flightsList');
+  if(c.flights.length===0){ flightsList.innerHTML = '<div class="empty-row">No flights logged</div>'; }
+  c.flights.forEach(f=>{
+    const badgeClass = f.direction==='arrival' ? 'badge-in' : (f.direction==='departure' ? 'badge-out':'badge-domestic');
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `<div class="card-row">
+      <div class="card-main">
+        <div class="card-title-line">
+          <span class="badge ${badgeClass}">${esc(f.direction)}</span>
+          <span class="mono">${esc(f.flightNumber||'—')}</span>
+        </div>
+        <div class="card-sub">${esc(f.from||'?')} → ${esc(f.to||'?')} &nbsp;·&nbsp; ${esc(f.date||'—')}${f.time?(' '+esc(f.time)):''}
+          ${f.confirmationCode ? '&nbsp;·&nbsp; Conf: <span class="mono">'+esc(f.confirmationCode)+'</span>' : ''}</div>
+        ${f.fileId ? `<div class="file-chip" style="cursor:pointer" onclick="viewFile('${f.fileId}','${esc(f.fileName||'')}')">📄 ${esc(f.fileName||'attachment')}</div>` : ''}
+      </div>
+      <div class="card-actions">
+        <button class="icon-btn" onclick="openFlightModal('${trip.id}','${c.id}','${f.id}')">✎</button>
+        <button class="icon-btn" onclick="deleteFlight('${trip.id}','${c.id}','${f.id}')">✕</button>
+      </div>
+    </div>`;
+    flightsList.appendChild(div);
+  });
+
+  const hotelsList = document.getElementById('hotelsList');
+  if(c.hotels.length===0){ hotelsList.innerHTML = '<div class="empty-row">No hotels logged</div>'; }
+  c.hotels.forEach(h=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `<div class="card-row">
+      <div class="card-main">
+        <div class="card-title-line">${esc(h.name)}</div>
+        <div class="card-sub">${esc(h.address||'')}<br>
+          ${esc(h.checkIn||'—')} → ${esc(h.checkOut||'—')}
+          ${h.confirmationCode ? '&nbsp;·&nbsp; Conf: <span class="mono">'+esc(h.confirmationCode)+'</span>' : ''}</div>
+        ${h.fileId ? `<div class="file-chip" style="cursor:pointer" onclick="viewFile('${h.fileId}','${esc(h.fileName||'')}')">📄 ${esc(h.fileName||'attachment')}</div>` : ''}
+      </div>
+      <div class="card-actions">
+        <button class="icon-btn" onclick="openHotelModal('${trip.id}','${c.id}','${h.id}')">✎</button>
+        <button class="icon-btn" onclick="deleteHotel('${trip.id}','${c.id}','${h.id}')">✕</button>
+      </div>
+    </div>`;
+    hotelsList.appendChild(div);
+  });
+
+  const formsList = document.getElementById('formsList');
+  if(c.forms.length===0){ formsList.innerHTML = '<div class="empty-row">No forms/links added</div>'; }
+  c.forms.forEach(f=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `<div class="card-row">
+      <div class="card-main">
+        <div class="card-title-line">
+          <span class="badge ${f.status==='done'?'badge-done':'badge-todo'}">${f.status==='done'?'Done':'To do'}</span>
+          ${esc(f.label)}
+        </div>
+        ${f.url ? `<div class="card-sub"><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.url)}</a></div>` : ''}
+        ${f.notes ? `<div class="card-sub">${esc(f.notes)}</div>` : ''}
+      </div>
+      <div class="card-actions">
+        <button class="icon-btn" onclick="toggleFormStatus('${trip.id}','${c.id}','${f.id}')">${f.status==='done'?'↺':'✓'}</button>
+        <button class="icon-btn" onclick="openFormModal('${trip.id}','${c.id}','${f.id}')">✎</button>
+        <button class="icon-btn" onclick="deleteForm('${trip.id}','${c.id}','${f.id}')">✕</button>
+      </div>
+    </div>`;
+    formsList.appendChild(div);
+  });
+
+  const docsList = document.getElementById('docsList');
+  if(c.documents.length===0){ docsList.innerHTML = '<div class="empty-row">No documents added</div>'; }
+  c.documents.forEach(d=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `<div class="card-row">
+      <div class="card-main">
+        <div class="card-title-line">${esc(d.label)}</div>
+        <div class="card-sub">${d.fileId ? esc(d.fileName||'file') : (d.url ? `<a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.url)}</a>` : '')}</div>
+      </div>
+      <div class="card-actions">
+        ${d.fileId ? `<button class="icon-btn" onclick="viewFile('${d.fileId}','${esc(d.fileName||'')}')">👁</button>` : ''}
+        <button class="icon-btn" onclick="deleteDoc('${trip.id}','${c.id}','${d.id}')">✕</button>
+      </div>
+    </div>`;
+    docsList.appendChild(div);
+  });
+}
+
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function updateCountryNotes(tripId, countryId, val){
+  const c = getCountry(getTrip(tripId), countryId);
+  c.notes = val; queueSave();
+}
+
+/* ==================== MODAL FRAMEWORK ==================== */
+function showModal(html){
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.id = 'dynModal';
+  overlay.innerHTML = `<div class="modal">${html}</div>`;
+  overlay.onclick = (e)=>{ if(e.target===overlay) closeModal(); };
+  document.body.appendChild(overlay);
+}
+function closeModal(){ const m = document.getElementById('dynModal'); if(m) m.remove(); }
+
+/* ---- Trip modal ---- */
+function openTripModal(tripId){
+  const trip = tripId ? getTrip(tripId) : null;
+  showModal(`
+    <h3>${trip?'Edit trip':'New trip'}</h3>
+    <div class="field"><label>Trip name</label><input id="mTripName" value="${esc(trip?.name||'')}" placeholder="e.g. Asia — Sales trip July 2026"></div>
+    <div class="field-row">
+      <div class="field"><label>Start date</label><input id="mTripStart" type="date" value="${trip?.startDate||''}"></div>
+      <div class="field"><label>End date</label><input id="mTripEnd" type="date" value="${trip?.endDate||''}"></div>
+    </div>
+    <div class="field">
+      <label>Travelers on this trip</label>
+      <div id="mTripTravelers" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveTripModal('${trip?trip.id:''}')">Save</button>
+    </div>
+  `);
+  const box = document.getElementById('mTripTravelers');
+  if(state.travelers.length===0){
+    box.innerHTML = '<div style="font-size:12px;color:var(--muted);">No travelers yet — add them from "Manage travelers".</div>';
+  }
+  state.travelers.forEach(t=>{
+    const checked = trip && trip.travelerIds && trip.travelerIds.includes(t.id);
+    const label = document.createElement('label');
+    label.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:13px;background:var(--surface-2);padding:5px 10px;border-radius:20px;cursor:pointer;';
+    label.innerHTML = `<input type="checkbox" value="${t.id}" ${checked?'checked':''} style="width:auto;"> ${esc(t.name)}`;
+    box.appendChild(label);
+  });
+}
+function saveTripModal(tripId){
+  const name = document.getElementById('mTripName').value.trim();
+  if(!name){ toast('Trip name is required', true); return; }
+  const startDate = document.getElementById('mTripStart').value;
+  const endDate = document.getElementById('mTripEnd').value;
+  const travelerIds = Array.from(document.querySelectorAll('#mTripTravelers input:checked')).map(i=>i.value);
+  if(tripId){
+    const t = getTrip(tripId);
+    Object.assign(t, { name, startDate, endDate, travelerIds });
+  } else {
+    const t = { id: uid(), name, startDate, endDate, travelerIds, countries: [] };
+    state.trips.push(t);
+    activeTripId = t.id;
+  }
+  queueSave(); closeModal(); render();
+}
+function deleteTrip(id){
+  if(!confirm('Delete this trip and all its data?')) return;
+  state.trips = state.trips.filter(t=>t.id!==id);
+  if(activeTripId===id){ activeTripId = state.trips[0]?.id || null; activeCountryId = null; }
+  queueSave(); render();
+}
+
+/* ---- Country modal ---- */
+function openCountryModal(tripId, countryId){
+  const trip = getTrip(tripId);
+  const c = countryId ? getCountry(trip, countryId) : null;
+  showModal(`
+    <h3>${c?'Edit stop':'Add country / stop'}</h3>
+    <div class="field"><label>Country / city</label><input id="mCountryName" value="${esc(c?.name||'')}" placeholder="e.g. Singapore"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveCountryModal('${tripId}','${countryId||''}')">Save</button>
+    </div>
+  `);
+}
+function saveCountryModal(tripId, countryId){
+  const name = document.getElementById('mCountryName').value.trim();
+  if(!name){ toast('Name is required', true); return; }
+  const trip = getTrip(tripId);
+  if(countryId){
+    getCountry(trip, countryId).name = name;
+  } else {
+    const c = { id: uid(), name, flights: [], hotels: [], forms: [], documents: [], notes: '' };
+    trip.countries.push(c);
+    activeCountryId = c.id;
+  }
+  queueSave(); closeModal(); render();
+}
+function deleteCountry(tripId, countryId){
+  if(!confirm('Remove this stop and all its flights/hotels/forms/documents?')) return;
+  const trip = getTrip(tripId);
+  trip.countries = trip.countries.filter(c=>c.id!==countryId);
+  if(activeCountryId===countryId){ activeCountryId = trip.countries[0]?.id || null; }
+  queueSave(); render();
+}
+
+/* ---- Flight modal ---- */
+function openFlightModal(tripId, countryId, flightId){
+  const trip = getTrip(tripId); const c = getCountry(trip, countryId);
+  const f = flightId ? c.flights.find(x=>x.id===flightId) : null;
+  showModal(`
+    <h3>${f?'Edit flight':'Add flight'}</h3>
+    <div class="field"><label>Direction</label>
+      <select id="mFDirection">
+        <option value="arrival" ${f?.direction==='arrival'?'selected':''}>Arrival into ${esc(c.name)}</option>
+        <option value="departure" ${f?.direction==='departure'?'selected':''}>Departure from ${esc(c.name)}</option>
+        <option value="domestic" ${f?.direction==='domestic'?'selected':''}>Domestic / transfer</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Flight number</label><input id="mFNumber" value="${esc(f?.flightNumber||'')}" placeholder="e.g. SQ236"></div>
+      <div class="field"><label>Confirmation code</label><input id="mFConf" value="${esc(f?.confirmationCode||'')}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>From</label><input id="mFFrom" value="${esc(f?.from||'')}" placeholder="TLV"></div>
+      <div class="field"><label>To</label><input id="mFTo" value="${esc(f?.to||'')}" placeholder="SIN"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Date</label><input id="mFDate" type="date" value="${f?.date||''}"></div>
+      <div class="field"><label>Time</label><input id="mFTime" type="time" value="${f?.time||''}"></div>
+    </div>
+    <div class="field">
+      <label>Attachment (e-ticket / boarding pass)</label>
+      <div class="file-drop" onclick="document.getElementById('mFFile').click()">
+        ${f?.fileId ? '📄 '+esc(f.fileName||'attached — click to replace') : 'Click to upload PDF or image'}
+      </div>
+      <input type="file" id="mFFile" style="display:none" accept="application/pdf,image/*">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveFlightModal('${tripId}','${countryId}','${flightId||''}')">Save</button>
+    </div>
+  `);
+}
+async function saveFlightModal(tripId, countryId, flightId){
+  const trip = getTrip(tripId); const c = getCountry(trip, countryId);
+  const data = {
+    direction: document.getElementById('mFDirection').value,
+    flightNumber: document.getElementById('mFNumber').value.trim(),
+    confirmationCode: document.getElementById('mFConf').value.trim(),
+    from: document.getElementById('mFFrom').value.trim(),
+    to: document.getElementById('mFTo').value.trim(),
+    date: document.getElementById('mFDate').value,
+    time: document.getElementById('mFTime').value,
+  };
+  const fileInput = document.getElementById('mFFile');
+  let existing = flightId ? c.flights.find(x=>x.id===flightId) : null;
+  if(fileInput.files[0]){
+    toast('Uploading file…');
+    try{
+      const up = await uploadFile(fileInput.files[0]);
+      data.fileId = up.fileId; data.fileName = up.filename;
+    }catch(e){ toast('Upload failed: ' + e.message, true); }
+  } else if(existing){
+    data.fileId = existing.fileId; data.fileName = existing.fileName;
+  }
+  if(existing){ Object.assign(existing, data); }
+  else { c.flights.push(Object.assign({ id: uid() }, data)); }
+  queueSave(); closeModal(); render();
+}
+function deleteFlight(tripId, countryId, flightId){
+  const c = getCountry(getTrip(tripId), countryId);
+  c.flights = c.flights.filter(f=>f.id!==flightId);
+  queueSave(); render();
+}
+
+/* ---- Hotel modal ---- */
+function openHotelModal(tripId, countryId, hotelId){
+  const trip = getTrip(tripId); const c = getCountry(trip, countryId);
+  const h = hotelId ? c.hotels.find(x=>x.id===hotelId) : null;
+  showModal(`
+    <h3>${h?'Edit hotel':'Add hotel'}</h3>
+    <div class="field"><label>Hotel name</label><input id="mHName" value="${esc(h?.name||'')}"></div>
+    <div class="field"><label>Address</label><input id="mHAddress" value="${esc(h?.address||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>Check-in</label><input id="mHIn" type="date" value="${h?.checkIn||''}"></div>
+      <div class="field"><label>Check-out</label><input id="mHOut" type="date" value="${h?.checkOut||''}"></div>
+    </div>
+    <div class="field"><label>Confirmation code</label><input id="mHConf" value="${esc(h?.confirmationCode||'')}"></div>
+    <div class="field">
+      <label>Attachment (voucher / confirmation)</label>
+      <div class="file-drop" onclick="document.getElementById('mHFile').click()">
+        ${h?.fileId ? '📄 '+esc(h.fileName||'attached — click to replace') : 'Click to upload PDF or image'}
+      </div>
+      <input type="file" id="mHFile" style="display:none" accept="application/pdf,image/*">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveHotelModal('${tripId}','${countryId}','${hotelId||''}')">Save</button>
+    </div>
+  `);
+}
+async function saveHotelModal(tripId, countryId, hotelId){
+  const trip = getTrip(tripId); const c = getCountry(trip, countryId);
+  const data = {
+    name: document.getElementById('mHName').value.trim(),
+    address: document.getElementById('mHAddress').value.trim(),
+    checkIn: document.getElementById('mHIn').value,
+    checkOut: document.getElementById('mHOut').value,
+    confirmationCode: document.getElementById('mHConf').value.trim(),
+  };
+  if(!data.name){ toast('Hotel name is required', true); return; }
+  const fileInput = document.getElementById('mHFile');
+  let existing = hotelId ? c.hotels.find(x=>x.id===hotelId) : null;
+  if(fileInput.files[0]){
+    toast('Uploading file…');
+    try{
+      const up = await uploadFile(fileInput.files[0]);
+      data.fileId = up.fileId; data.fileName = up.filename;
+    }catch(e){ toast('Upload failed: ' + e.message, true); }
+  } else if(existing){
+    data.fileId = existing.fileId; data.fileName = existing.fileName;
+  }
+  if(existing){ Object.assign(existing, data); }
+  else { c.hotels.push(Object.assign({ id: uid() }, data)); }
+  queueSave(); closeModal(); render();
+}
+function deleteHotel(tripId, countryId, hotelId){
+  const c = getCountry(getTrip(tripId), countryId);
+  c.hotels = c.hotels.filter(h=>h.id!==hotelId);
+  queueSave(); render();
+}
+
+/* ---- Form/link modal (arrival cards, e-visas, K-ETA, etc.) ---- */
+function openFormModal(tripId, countryId, formId){
+  const trip = getTrip(tripId); const c = getCountry(trip, countryId);
+  const f = formId ? c.forms.find(x=>x.id===formId) : null;
+  showModal(`
+    <h3>${f?'Edit form / link':'Add form / link'}</h3>
+    <div class="field"><label>Label</label><input id="mFoLabel" value="${esc(f?.label||'')}" placeholder="e.g. SG Arrival Card (SGAC)"></div>
+    <div class="field"><label>Link (official portal / e-visa / confirmation)</label><input id="mFoUrl" value="${esc(f?.url||'')}" placeholder="https://"></div>
+    <div class="field"><label>Status</label>
+      <select id="mFoStatus">
+        <option value="todo" ${f?.status!=='done'?'selected':''}>To do</option>
+        <option value="done" ${f?.status==='done'?'selected':''}>Done</option>
+      </select>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="mFoNotes">${esc(f?.notes||'')}</textarea></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveFormModal('${tripId}','${countryId}','${formId||''}')">Save</button>
+    </div>
+  `);
+}
+function saveFormModal(tripId, countryId, formId){
+  const trip = getTrip(tripId); const c = getCountry(trip, countryId);
+  const data = {
+    label: document.getElementById('mFoLabel').value.trim(),
+    url: document.getElementById('mFoUrl').value.trim(),
+    status: document.getElementById('mFoStatus').value,
+    notes: document.getElementById('mFoNotes').value.trim(),
+  };
+  if(!data.label){ toast('Label is required', true); return; }
+  const existing = formId ? c.forms.find(x=>x.id===formId) : null;
+  if(existing){ Object.assign(existing, data); }
+  else { c.forms.push(Object.assign({ id: uid() }, data)); }
+  queueSave(); closeModal(); render();
+}
+function toggleFormStatus(tripId, countryId, formId){
+  const c = getCountry(getTrip(tripId), countryId);
+  const f = c.forms.find(x=>x.id===formId);
+  f.status = f.status==='done' ? 'todo' : 'done';
+  queueSave(); render();
+}
+function deleteForm(tripId, countryId, formId){
+  const c = getCountry(getTrip(tripId), countryId);
+  c.forms = c.forms.filter(f=>f.id!==formId);
+  queueSave(); render();
+}
+
+/* ---- Document modal (passport scans, insurance, misc uploads or links) ---- */
+function openDocModal(tripId, countryId){
+  showModal(`
+    <h3>Add document</h3>
+    <div class="field"><label>Label</label><input id="mDLabel" placeholder="e.g. Passport scan, Travel insurance"></div>
+    <div class="field">
+      <label>Upload a file, or paste a link instead</label>
+      <div class="file-drop" onclick="document.getElementById('mDFile').click()">Click to upload PDF or image</div>
+      <input type="file" id="mDFile" style="display:none" accept="application/pdf,image/*">
+    </div>
+    <div class="field"><label>Or link</label><input id="mDUrl" placeholder="https://"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveDocModal('${tripId}','${countryId}')">Save</button>
+    </div>
+  `);
+}
+async function saveDocModal(tripId, countryId){
+  const trip = getTrip(tripId); const c = getCountry(trip, countryId);
+  const label = document.getElementById('mDLabel').value.trim();
+  if(!label){ toast('Label is required', true); return; }
+  const url = document.getElementById('mDUrl').value.trim();
+  const fileInput = document.getElementById('mDFile');
+  const doc = { id: uid(), label };
+  if(fileInput.files[0]){
+    toast('Uploading file…');
+    try{
+      const up = await uploadFile(fileInput.files[0]);
+      doc.fileId = up.fileId; doc.fileName = up.filename;
+    }catch(e){ toast('Upload failed: ' + e.message, true); return; }
+  } else if(url){
+    doc.url = url;
+  } else {
+    toast('Attach a file or a link', true); return;
+  }
+  c.documents.push(doc);
+  queueSave(); closeModal(); render();
+}
+function deleteDoc(tripId, countryId, docId){
+  const c = getCountry(getTrip(tripId), countryId);
+  const d = c.documents.find(x=>x.id===docId);
+  c.documents = c.documents.filter(x=>x.id!==docId);
+  queueSave(); render();
+}
+
+/* ---- Traveler management ---- */
+function openTravelerModal(){
+  showModal(`
+    <h3>Travelers</h3>
+    <div id="mTravelerList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;"></div>
+    <div class="field"><label>Name</label><input id="mNewTravName" placeholder="Full name"></div>
+    <div class="field-row">
+      <div class="field"><label>Nationality</label><input id="mNewTravNat" placeholder="e.g. Israeli"></div>
+      <div class="field"><label>Passport number</label><input id="mNewTravPass" placeholder="Optional"></div>
+    </div>
+    <button class="btn btn-teal btn-block" onclick="addTraveler()">+ Add traveler</button>
+    <div class="modal-actions">
+      <button class="btn btn-gold" onclick="closeModal()">Done</button>
+    </div>
+  `);
+  renderTravelerModalList();
+}
+function renderTravelerModalList(){
+  const box = document.getElementById('mTravelerList');
+  if(!box) return;
+  box.innerHTML = '';
+  if(state.travelers.length===0){
+    box.innerHTML = '<div style="font-size:12.5px;color:var(--muted);">No travelers yet.</div>';
+  }
+  state.travelers.forEach(t=>{
+    const row = document.createElement('div');
+    row.className = 'card';
+    row.style.margin = '0';
+    row.innerHTML = `<div class="card-row">
+      <div class="card-main">
+        <div class="card-title-line">${esc(t.name)}</div>
+        <div class="card-sub">${esc(t.nationality||'')}${t.passportNumber?(' · Passport '+esc(t.passportNumber)):''}</div>
+      </div>
+      <div class="card-actions"><button class="icon-btn" onclick="removeTraveler('${t.id}')">✕</button></div>
+    </div>`;
+    box.appendChild(row);
+  });
+}
+function addTraveler(){
+  const name = document.getElementById('mNewTravName').value.trim();
+  if(!name){ toast('Name is required', true); return; }
+  const nationality = document.getElementById('mNewTravNat').value.trim();
+  const passportNumber = document.getElementById('mNewTravPass').value.trim();
+  state.travelers.push({ id: uid(), name, nationality, passportNumber });
+  document.getElementById('mNewTravName').value = '';
+  document.getElementById('mNewTravNat').value = '';
+  document.getElementById('mNewTravPass').value = '';
+  queueSave(); renderTravelerModalList(); renderSidebar();
+}
+function removeTraveler(id){
+  state.travelers = state.travelers.filter(t=>t.id!==id);
+  state.trips.forEach(t=>{ t.travelerIds = (t.travelerIds||[]).filter(x=>x!==id); });
+  queueSave(); renderTravelerModalList(); render();
+}
+</script>
+</body>
+</html>
