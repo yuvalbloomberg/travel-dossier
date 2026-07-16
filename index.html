@@ -8,30 +8,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#12141c;
-    --surface:#1b1e29;
-    --surface-2:#232837;
-    --surface-3:#2b3143;
-    --text:#edeae2;
-    --muted:#8b8d98;
-    --muted-2:#5f6270;
-    --gold:#c9a227;
-    --gold-dim:rgba(201,162,39,0.18);
-    --teal:#3d8c7c;
-    --teal-dim:rgba(61,140,124,0.16);
-    --red:#c1584a;
-    --red-dim:rgba(193,88,74,0.16);
-    --border:rgba(237,234,226,0.10);
-    --border-strong:rgba(237,234,226,0.18);
+    --bg:#ffffff;
+    --surface:#ffffff;
+    --surface-2:#f5f4f0;
+    --surface-3:#eae8e1;
+    --text:#1c1c1a;
+    --muted:#6b6b66;
+    --muted-2:#9a9a94;
+    --gold:#a3760d;
+    --gold-dim:rgba(163,118,13,0.10);
+    --teal:#1f6b5c;
+    --teal-dim:rgba(31,107,92,0.10);
+    --red:#ab3c2e;
+    --red-dim:rgba(171,60,46,0.09);
+    --border:rgba(20,20,15,0.09);
+    --border-strong:rgba(20,20,15,0.18);
     --radius:10px;
-    --shadow:0 8px 24px rgba(0,0,0,0.35);
+    --shadow:0 8px 24px rgba(20,20,15,0.08);
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
     background:
-      radial-gradient(1200px 600px at 15% -10%, rgba(201,162,39,0.06), transparent 60%),
-      radial-gradient(1000px 500px at 100% 0%, rgba(61,140,124,0.07), transparent 55%),
+      radial-gradient(1200px 500px at 15% -10%, rgba(163,118,13,0.05), transparent 60%),
+      radial-gradient(1000px 500px at 100% 0%, rgba(31,107,92,0.05), transparent 55%),
       var(--bg);
     color:var(--text);
     font-family:'Inter',sans-serif;
@@ -44,7 +44,7 @@
   /* ---------- layout ---------- */
   .app{display:flex;min-height:100vh;}
   .sidebar{
-    width:280px;flex-shrink:0;background:var(--surface);
+    width:280px;flex-shrink:0;background:var(--surface-2);
     border-right:1px solid var(--border);
     display:flex;flex-direction:column;
     padding:20px 16px;gap:18px;
@@ -70,13 +70,13 @@
     padding:10px 10px;border-radius:8px;cursor:pointer;
     border:1px solid transparent;
   }
-  .trip-item:hover{background:var(--surface-2);}
-  .trip-item.active{background:var(--surface-2);border-color:var(--border-strong);}
+  .trip-item:hover{background:var(--surface-3);}
+  .trip-item.active{background:#ffffff;border-color:var(--border-strong);box-shadow:var(--shadow);}
   .trip-item-name{font-size:14px;font-weight:600;}
   .trip-item-dates{font-size:11.5px;color:var(--muted);font-family:'JetBrains Mono',monospace;}
 
   .btn{
-    border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);
+    border:1px solid var(--border-strong);background:#ffffff;color:var(--text);
     padding:9px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;
     font-weight:500;transition:background .15s,border-color .15s;
   }
@@ -90,7 +90,7 @@
   .btn-block{width:100%;}
   .btn-sm{padding:5px 10px;font-size:12px;}
   .btn-ghost{background:transparent;border-color:transparent;color:var(--muted);}
-  .btn-ghost:hover{background:var(--surface-2);color:var(--text);}
+  .btn-ghost:hover{background:var(--surface-3);color:var(--text);}
 
   .sidebar-footer{margin-top:auto;display:flex;flex-direction:column;gap:8px;}
 
@@ -107,7 +107,6 @@
   .trip-header{
     display:flex;justify-content:space-between;align-items:flex-start;
     padding-bottom:20px;margin-bottom:22px;border-bottom:1px solid var(--border);
-    position:relative;
   }
   .trip-title{font-family:'Spectral',serif;font-size:30px;font-weight:700;margin:0 0 6px;}
   .trip-dates{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);}
@@ -117,11 +116,19 @@
     background:var(--surface-2);border:1px solid var(--border-strong);color:var(--muted);
   }
 
+  /* ---------- view mode toggle ---------- */
+  .view-toggle{display:flex;gap:6px;margin-bottom:20px;}
+  .view-toggle button{
+    border:1px solid var(--border-strong);background:#fff;color:var(--muted);
+    padding:7px 16px;border-radius:20px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;
+  }
+  .view-toggle button.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+
   /* ---------- country tabs (passport stamp style) ---------- */
   .country-tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;}
   .country-tab{
     display:flex;align-items:center;gap:8px;padding:8px 14px 8px 8px;
-    border-radius:30px;border:1px solid var(--border-strong);background:var(--surface);
+    border-radius:30px;border:1px solid var(--border-strong);background:#fff;
     cursor:pointer;transition:border-color .15s,background .15s;
   }
   .country-tab:hover{background:var(--surface-2);}
@@ -159,7 +166,7 @@
     background:var(--surface-2);padding:2px 7px;border-radius:20px;
   }
   .card{
-    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    background:#fff;border:1px solid var(--border);border-radius:var(--radius);
     padding:14px 16px;margin-bottom:10px;position:relative;
   }
   .card-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
@@ -182,22 +189,56 @@
     display:flex;align-items:center;justify-content:center;font-size:13px;
   }
   .icon-btn:hover{background:var(--surface-2);color:var(--text);}
+  .icon-btn.done{border-color:var(--teal);color:var(--teal);background:var(--teal-dim);}
 
   .empty-row{
     color:var(--muted-2);font-size:13px;padding:16px;text-align:center;
     border:1px dashed var(--border);border-radius:var(--radius);
   }
 
+  /* ---------- journey / timeline ---------- */
+  .journey-completed-toggle{
+    display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;
+    cursor:pointer;margin-bottom:14px;padding:8px 12px;border:1px dashed var(--border-strong);
+    border-radius:8px;
+  }
+  .journey-completed-toggle:hover{background:var(--surface-2);}
+  .timeline{position:relative;padding-left:28px;}
+  .timeline::before{
+    content:'';position:absolute;left:9px;top:6px;bottom:6px;width:2px;
+    background:linear-gradient(var(--border-strong), var(--border));
+  }
+  .timeline-item{position:relative;margin-bottom:16px;}
+  .timeline-dot{
+    position:absolute;left:-28px;top:14px;width:20px;height:20px;border-radius:50%;
+    background:#fff;border:2px solid var(--border-strong);
+    display:flex;align-items:center;justify-content:center;font-size:10px;
+  }
+  .timeline-item.done .timeline-dot{border-color:var(--teal);background:var(--teal-dim);color:var(--teal);}
+  .timeline-item.next .timeline-dot{border-color:var(--gold);background:var(--gold-dim);color:var(--gold);}
+  .timeline-item.done .tcard{opacity:0.55;}
+  .tcard{
+    background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;
+  }
+  .timeline-item.next .tcard{border-color:var(--gold);box-shadow:var(--shadow);}
+  .forms-callout{
+    margin-top:10px;padding:10px 12px;background:var(--gold-dim);border:1px solid var(--gold);
+    border-radius:8px;font-size:12.5px;
+  }
+  .forms-callout .fc-title{font-weight:600;color:var(--gold);margin-bottom:6px;}
+  .forms-callout a{font-weight:600;}
+
   /* ---------- forms / modal ---------- */
   .overlay{
-    position:fixed;inset:0;background:rgba(10,11,16,0.65);
+    position:fixed;inset:0;background:rgba(30,28,20,0.35);
     display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;
   }
   .modal{
-    background:var(--surface);border:1px solid var(--border-strong);border-radius:14px;
-    width:100%;max-width:460px;max-height:88vh;overflow-y:auto;
-    padding:24px;box-shadow:var(--shadow);
+    background:#fff;border:1px solid var(--border-strong);border-radius:14px;
+    width:100%;max-width:480px;max-height:88vh;overflow-y:auto;
+    padding:24px;box-shadow:0 20px 50px rgba(20,20,15,0.18);
   }
+  .modal.wide{max-width:640px;}
   .modal h3{font-family:'Spectral',serif;margin:0 0 16px;font-size:19px;}
   .field{margin-bottom:13px;}
   .field label{
@@ -224,11 +265,18 @@
 
   .top-toast{
     position:fixed;top:16px;left:50%;transform:translateX(-50%);
-    background:var(--surface-3);border:1px solid var(--border-strong);
+    background:var(--text);color:#fff;
     padding:9px 16px;border-radius:20px;font-size:12.5px;z-index:100;
     box-shadow:var(--shadow);
   }
-  .top-toast.error{border-color:var(--red);color:var(--red);}
+  .top-toast.error{background:var(--red);}
+
+  .staged-item{
+    border:1px solid var(--border-strong);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:var(--surface-2);
+  }
+  .staged-item-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .staged-item-head .badge{background:var(--surface-3);color:var(--muted);}
+  .import-progress{font-size:12.5px;color:var(--muted);margin:10px 0;}
 
   ::-webkit-scrollbar{width:9px;height:9px;}
   ::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:20px;}
@@ -277,6 +325,7 @@
       <div id="tripList"></div>
     </div>
     <button class="btn btn-gold btn-block" onclick="openTripModal()">+ New trip</button>
+    <button class="btn btn-teal btn-block" onclick="openImportModal()">⇧ Import documents</button>
 
     <div class="side-section">
       <div class="side-label">Travelers</div>
@@ -299,6 +348,8 @@
 let state = { travelers: [], trips: [] };
 let activeTripId = null;
 let activeCountryId = null;
+let viewMode = 'journey'; // 'journey' | 'stops'
+let showCompleted = false;
 let cfg = { url: localStorage.getItem('td_url') || '', token: localStorage.getItem('td_token') || '' };
 let saveTimer = null;
 
@@ -329,7 +380,18 @@ async function loadState(){
   }catch(e){
     console.warn('load failed', e);
   }
+  migrateState();
   render();
+}
+
+// ensure older saved data gets the fields this version expects
+function migrateState(){
+  (state.trips||[]).forEach(t=>{
+    (t.countries||[]).forEach(c=>{
+      (c.flights||[]).forEach(f=>{ if(typeof f.completed !== 'boolean') f.completed = false; });
+      (c.hotels||[]).forEach(h=>{ if(typeof h.completed !== 'boolean') h.completed = false; });
+    });
+  });
 }
 
 function queueSave(){
@@ -382,8 +444,22 @@ async function viewFile(fileId, filename){
     window.open(blobUrl, '_blank');
   }catch(e){ toast('Could not open file: ' + e.message, true); }
 }
-async function deleteFile(fileId){
-  try{ await apiFetch('/api/file/' + fileId, { method:'DELETE' }); }catch(e){}
+function fileToBase64(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=> resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+async function extractFromFile(base64, mediaType, filename){
+  const res = await apiFetch('/api/extract', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ base64, mediaType, filename })
+  });
+  const data = await res.json();
+  return data.items || [];
 }
 
 /* ==================== DATA HELPERS ==================== */
@@ -395,6 +471,11 @@ function countryComplete(c){
 }
 function countryCode(name){
   return (name||'??').replace(/[^A-Za-z]/g,'').slice(0,3).toUpperCase() || '??';
+}
+function findCountryByName(trip, name){
+  const n = (name||'').trim().toLowerCase();
+  if(!n) return null;
+  return trip.countries.find(c=>c.name.trim().toLowerCase()===n) || null;
 }
 
 /* ==================== RENDER: SIDEBAR ==================== */
@@ -434,13 +515,12 @@ function render(){
   if(!trip){
     main.innerHTML = `<div class="empty-state">
       <h2>No trip selected</h2>
-      <div>Create a trip to start logging flights, hotels, arrival forms and documents.</div>
+      <div>Create a trip, then import your PDFs/vouchers or add stops manually.</div>
       <button class="btn btn-gold" onclick="openTripModal()">+ New trip</button>
     </div>`;
     return;
   }
   if(!activeCountryId && trip.countries.length){ activeCountryId = trip.countries[0].id; }
-  const country = getCountry(trip, activeCountryId);
 
   const travelerChips = (trip.travelerIds||[]).map(id=>{
     const t = state.travelers.find(x=>x.id===id);
@@ -460,9 +540,148 @@ function render(){
       </div>
     </div>
 
-    <div class="country-tabs" id="countryTabs"></div>
-    <div id="countryPanel"></div>
+    <div class="view-toggle">
+      <button class="${viewMode==='journey'?'active':''}" onclick="setViewMode('journey')">Journey</button>
+      <button class="${viewMode==='stops'?'active':''}" onclick="setViewMode('stops')">By stop</button>
+    </div>
+
+    <div id="viewBody"></div>
   `;
+
+  if(viewMode === 'journey'){
+    renderJourneyView(trip);
+  } else {
+    renderStopsView(trip);
+  }
+}
+
+function setViewMode(mode){ viewMode = mode; render(); }
+
+/* ---------- Journey (timeline) view ---------- */
+function buildTimeline(trip){
+  const items = [];
+  trip.countries.forEach(c=>{
+    c.flights.forEach(f=>{
+      items.push({
+        kind:'flight', id:f.id, countryId:c.id, countryName:c.name,
+        sortKey:(f.date||'9999-99-99')+' '+(f.time||'00:00'),
+        completed: !!f.completed, data:f
+      });
+    });
+    c.hotels.forEach(h=>{
+      items.push({
+        kind:'hotel', id:h.id, countryId:c.id, countryName:c.name,
+        sortKey:(h.checkIn||'9999-99-99')+' 12:00',
+        completed: !!h.completed, data:h
+      });
+    });
+  });
+  items.sort((a,b)=> a.sortKey.localeCompare(b.sortKey));
+  return items;
+}
+
+function renderJourneyView(trip){
+  const body = document.getElementById('viewBody');
+  const items = buildTimeline(trip);
+  if(items.length===0){
+    body.innerHTML = `<div class="empty-row">No flights or hotels logged yet. Import documents or add a stop under "By stop".</div>`;
+    return;
+  }
+  const completedItems = items.filter(i=>i.completed);
+  const upcomingItems = items.filter(i=>!i.completed);
+
+  let html = '';
+  html += `<div class="journey-completed-toggle" onclick="toggleShowCompleted()">
+    ${showCompleted ? '▾' : '▸'} Completed (${completedItems.length})
+  </div>`;
+
+  if(showCompleted && completedItems.length){
+    html += `<div class="timeline">` + completedItems.map(i=>renderTimelineItem(trip, i, false)).join('') + `</div>`;
+  }
+
+  if(upcomingItems.length){
+    html += `<div class="timeline">` + upcomingItems.map((i,idx)=>renderTimelineItem(trip, i, idx===0)).join('') + `</div>`;
+  } else {
+    html += `<div class="empty-row">All logged legs are marked complete 🎉</div>`;
+  }
+
+  body.innerHTML = html;
+}
+
+function renderTimelineItem(trip, item, isNext){
+  const stateClass = item.completed ? 'done' : (isNext ? 'next' : '');
+  const dotIcon = item.completed ? '✓' : (item.kind==='flight' ? '✈' : '🏨');
+  let inner = '';
+
+  if(item.kind==='flight'){
+    const f = item.data;
+    const badgeClass = f.direction==='arrival' ? 'badge-in' : (f.direction==='departure' ? 'badge-out':'badge-domestic');
+    inner = `
+      <div class="card-row">
+        <div class="card-main">
+          <div class="card-title-line">
+            <span class="badge ${badgeClass}">${esc(f.direction)}</span>
+            <span class="mono">${esc(f.flightNumber||'—')}</span>
+            <span style="color:var(--muted);font-size:12.5px;">→ ${esc(item.countryName)}</span>
+          </div>
+          <div class="card-sub">${esc(f.from||'?')} → ${esc(f.to||'?')} &nbsp;·&nbsp; ${esc(f.date||'—')}${f.time?(' '+esc(f.time)):''}
+            ${f.confirmationCode ? '&nbsp;·&nbsp; Conf: <span class="mono">'+esc(f.confirmationCode)+'</span>' : ''}</div>
+          ${f.fileId ? `<div class="file-chip" style="cursor:pointer" onclick="viewFile('${f.fileId}','${esc(f.fileName||'')}')">📄 ${esc(f.fileName||'attachment')}</div>` : ''}
+        </div>
+        <div class="card-actions">
+          <button class="icon-btn ${f.completed?'done':''}" onclick="toggleFlightDone('${trip.id}','${item.countryId}','${f.id}')">${f.completed?'✓':'○'}</button>
+        </div>
+      </div>`;
+    if(f.direction==='arrival'){
+      const c = getCountry(trip, item.countryId);
+      if(c.forms && c.forms.length){
+        inner += `<div class="forms-callout"><div class="fc-title">Entry forms for ${esc(c.name)}</div>` +
+          c.forms.map(fo=>`<div>${fo.status==='done'?'✓':'•'} ${esc(fo.label)}${fo.url?` — <a href="${esc(fo.url)}" target="_blank" rel="noopener">open form</a>`:''}</div>`).join('') +
+          `</div>`;
+      }
+    }
+  } else {
+    const h = item.data;
+    inner = `
+      <div class="card-row">
+        <div class="card-main">
+          <div class="card-title-line">${esc(h.name)} <span style="color:var(--muted);font-size:12.5px;font-weight:400;">— ${esc(item.countryName)}</span></div>
+          <div class="card-sub">${esc(h.address||'')}<br>
+            ${esc(h.checkIn||'—')} → ${esc(h.checkOut||'—')}
+            ${h.confirmationCode ? '&nbsp;·&nbsp; Conf: <span class="mono">'+esc(h.confirmationCode)+'</span>' : ''}</div>
+          ${h.fileId ? `<div class="file-chip" style="cursor:pointer" onclick="viewFile('${h.fileId}','${esc(h.fileName||'')}')">📄 ${esc(h.fileName||'attachment')}</div>` : ''}
+        </div>
+        <div class="card-actions">
+          <button class="icon-btn ${h.completed?'done':''}" onclick="toggleHotelDone('${trip.id}','${item.countryId}','${h.id}')">${h.completed?'✓':'○'}</button>
+        </div>
+      </div>`;
+  }
+
+  return `<div class="timeline-item ${stateClass}">
+    <div class="timeline-dot">${dotIcon}</div>
+    <div class="tcard">${inner}</div>
+  </div>`;
+}
+
+function toggleShowCompleted(){ showCompleted = !showCompleted; render(); }
+
+function toggleFlightDone(tripId, countryId, flightId){
+  const c = getCountry(getTrip(tripId), countryId);
+  const f = c.flights.find(x=>x.id===flightId);
+  f.completed = !f.completed;
+  queueSave(); render();
+}
+function toggleHotelDone(tripId, countryId, hotelId){
+  const c = getCountry(getTrip(tripId), countryId);
+  const h = c.hotels.find(x=>x.id===hotelId);
+  h.completed = !h.completed;
+  queueSave(); render();
+}
+
+/* ---------- Stops (management) view ---------- */
+function renderStopsView(trip){
+  const body = document.getElementById('viewBody');
+  body.innerHTML = `<div class="country-tabs" id="countryTabs"></div><div id="countryPanel"></div>`;
 
   const tabsEl = document.getElementById('countryTabs');
   trip.countries.forEach(c=>{
@@ -479,6 +698,7 @@ function render(){
   addTab.onclick = ()=>openCountryModal(trip.id);
   tabsEl.appendChild(addTab);
 
+  const country = getCountry(trip, activeCountryId);
   if(country){
     renderCountryPanel(trip, country);
   } else {
@@ -528,7 +748,7 @@ function renderCountryPanel(trip, c){
 
     <div class="section">
       <div class="section-title" style="margin-bottom:8px;">🗒 Notes</div>
-      <textarea style="width:100%;min-height:70px;background:var(--surface);border:1px solid var(--border);
+      <textarea style="width:100%;min-height:70px;background:#fff;border:1px solid var(--border);
         color:var(--text);border-radius:var(--radius);padding:12px;font-family:inherit;font-size:13.5px;"
         onchange="updateCountryNotes('${trip.id}','${c.id}', this.value)">${esc(c.notes||'')}</textarea>
     </div>
@@ -551,6 +771,7 @@ function renderCountryPanel(trip, c){
         ${f.fileId ? `<div class="file-chip" style="cursor:pointer" onclick="viewFile('${f.fileId}','${esc(f.fileName||'')}')">📄 ${esc(f.fileName||'attachment')}</div>` : ''}
       </div>
       <div class="card-actions">
+        <button class="icon-btn ${f.completed?'done':''}" title="Mark done" onclick="toggleFlightDone('${trip.id}','${c.id}','${f.id}')">${f.completed?'✓':'○'}</button>
         <button class="icon-btn" onclick="openFlightModal('${trip.id}','${c.id}','${f.id}')">✎</button>
         <button class="icon-btn" onclick="deleteFlight('${trip.id}','${c.id}','${f.id}')">✕</button>
       </div>
@@ -572,6 +793,7 @@ function renderCountryPanel(trip, c){
         ${h.fileId ? `<div class="file-chip" style="cursor:pointer" onclick="viewFile('${h.fileId}','${esc(h.fileName||'')}')">📄 ${esc(h.fileName||'attachment')}</div>` : ''}
       </div>
       <div class="card-actions">
+        <button class="icon-btn ${h.completed?'done':''}" title="Mark done" onclick="toggleHotelDone('${trip.id}','${c.id}','${h.id}')">${h.completed?'✓':'○'}</button>
         <button class="icon-btn" onclick="openHotelModal('${trip.id}','${c.id}','${h.id}')">✎</button>
         <button class="icon-btn" onclick="deleteHotel('${trip.id}','${c.id}','${h.id}')">✕</button>
       </div>
@@ -630,11 +852,11 @@ function updateCountryNotes(tripId, countryId, val){
 }
 
 /* ==================== MODAL FRAMEWORK ==================== */
-function showModal(html){
+function showModal(html, wide){
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
   overlay.id = 'dynModal';
-  overlay.innerHTML = `<div class="modal">${html}</div>`;
+  overlay.innerHTML = `<div class="modal${wide?' wide':''}">${html}</div>`;
   overlay.onclick = (e)=>{ if(e.target===overlay) closeModal(); };
   document.body.appendChild(overlay);
 }
@@ -789,7 +1011,7 @@ async function saveFlightModal(tripId, countryId, flightId){
     data.fileId = existing.fileId; data.fileName = existing.fileName;
   }
   if(existing){ Object.assign(existing, data); }
-  else { c.flights.push(Object.assign({ id: uid() }, data)); }
+  else { c.flights.push(Object.assign({ id: uid(), completed:false }, data)); }
   queueSave(); closeModal(); render();
 }
 function deleteFlight(tripId, countryId, flightId){
@@ -846,7 +1068,7 @@ async function saveHotelModal(tripId, countryId, hotelId){
     data.fileId = existing.fileId; data.fileName = existing.fileName;
   }
   if(existing){ Object.assign(existing, data); }
-  else { c.hotels.push(Object.assign({ id: uid() }, data)); }
+  else { c.hotels.push(Object.assign({ id: uid(), completed:false }, data)); }
   queueSave(); closeModal(); render();
 }
 function deleteHotel(tripId, countryId, hotelId){
@@ -942,7 +1164,6 @@ async function saveDocModal(tripId, countryId){
 }
 function deleteDoc(tripId, countryId, docId){
   const c = getCountry(getTrip(tripId), countryId);
-  const d = c.documents.find(x=>x.id===docId);
   c.documents = c.documents.filter(x=>x.id!==docId);
   queueSave(); render();
 }
@@ -1000,6 +1221,162 @@ function removeTraveler(id){
   state.travelers = state.travelers.filter(t=>t.id!==id);
   state.trips.forEach(t=>{ t.travelerIds = (t.travelerIds||[]).filter(x=>x!==id); });
   queueSave(); renderTravelerModalList(); render();
+}
+
+/* ==================== IMPORT DOCUMENTS (extraction) ==================== */
+let stagedItems = []; // {localId, type, ...fields, sourceFileId, sourceFileName}
+
+function openImportModal(){
+  if(state.trips.length===0){
+    toast('Create a trip first', true);
+    return;
+  }
+  stagedItems = [];
+  const tripOptions = state.trips.map(t=>`<option value="${t.id}" ${t.id===activeTripId?'selected':''}>${esc(t.name)}</option>`).join('');
+  showModal(`
+    <h3>Import documents</h3>
+    <p style="font-size:12.5px;color:var(--muted);margin-top:-8px;">
+      Upload e-tickets, boarding passes, or hotel vouchers (PDF or image). The tool reads them and
+      drafts the flights/hotels for you to review before adding.
+    </p>
+    <div class="field"><label>Trip</label><select id="mImportTrip">${tripOptions}</select></div>
+    <div class="field">
+      <div class="file-drop" onclick="document.getElementById('mImportFiles').click()">Click to select one or more files</div>
+      <input type="file" id="mImportFiles" style="display:none" accept="application/pdf,image/*" multiple>
+    </div>
+    <div id="importProgress"></div>
+    <div id="importStaged"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-teal" id="importConfirmBtn" style="display:none" onclick="confirmImport()">Add all to trip</button>
+    </div>
+  `, true);
+  document.getElementById('mImportFiles').addEventListener('change', handleImportFiles);
+}
+
+async function handleImportFiles(e){
+  const files = Array.from(e.target.files || []);
+  if(!files.length) return;
+  const progress = document.getElementById('importProgress');
+  for(let i=0;i<files.length;i++){
+    const file = files[i];
+    progress.innerHTML = `<div class="import-progress">Processing ${i+1} / ${files.length}: ${esc(file.name)}…</div>`;
+    try{
+      const [uploadResult, base64] = await Promise.all([ uploadFile(file), fileToBase64(file) ]);
+      const items = await extractFromFile(base64, file.type || 'application/pdf', file.name);
+      items.forEach(it=>{
+        stagedItems.push(Object.assign({ localId: uid(), sourceFileId: uploadResult.fileId, sourceFileName: uploadResult.filename }, it));
+      });
+      if(items.length===0){
+        toast(`No flight/hotel details found in ${file.name}`, true);
+      }
+    }catch(err){
+      toast('Could not process ' + file.name + ': ' + err.message, true);
+    }
+  }
+  progress.innerHTML = '';
+  renderStagedItems();
+}
+
+function renderStagedItems(){
+  const box = document.getElementById('importStaged');
+  const confirmBtn = document.getElementById('importConfirmBtn');
+  if(stagedItems.length===0){ box.innerHTML=''; confirmBtn.style.display='none'; return; }
+  confirmBtn.style.display = 'inline-block';
+  box.innerHTML = `<div style="font-size:12px;color:var(--muted);margin:10px 0 4px;">Review and edit before adding (${stagedItems.length} item(s)):</div>`;
+  stagedItems.forEach(it=>{
+    const div = document.createElement('div');
+    div.className = 'staged-item';
+    if(it.type==='flight'){
+      div.innerHTML = `
+        <div class="staged-item-head">
+          <span class="badge">Flight — from ${esc(it.sourceFileName)}</span>
+          <button class="icon-btn" onclick="removeStagedItem('${it.localId}')">✕</button>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Country</label><input value="${esc(it.countryGuess||'')}" onchange="updateStaged('${it.localId}','countryGuess',this.value)"></div>
+          <div class="field"><label>Direction</label>
+            <select onchange="updateStaged('${it.localId}','direction',this.value)">
+              <option value="arrival" ${it.direction==='arrival'?'selected':''}>Arrival</option>
+              <option value="departure" ${it.direction==='departure'?'selected':''}>Departure</option>
+              <option value="domestic" ${it.direction==='domestic'?'selected':''}>Domestic</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Flight #</label><input value="${esc(it.flightNumber||'')}" onchange="updateStaged('${it.localId}','flightNumber',this.value)"></div>
+          <div class="field"><label>Confirmation</label><input value="${esc(it.confirmationCode||'')}" onchange="updateStaged('${it.localId}','confirmationCode',this.value)"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>From</label><input value="${esc(it.from||'')}" onchange="updateStaged('${it.localId}','from',this.value)"></div>
+          <div class="field"><label>To</label><input value="${esc(it.to||'')}" onchange="updateStaged('${it.localId}','to',this.value)"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Date</label><input type="date" value="${it.date||''}" onchange="updateStaged('${it.localId}','date',this.value)"></div>
+          <div class="field"><label>Time</label><input type="time" value="${it.time||''}" onchange="updateStaged('${it.localId}','time',this.value)"></div>
+        </div>
+      `;
+    } else {
+      div.innerHTML = `
+        <div class="staged-item-head">
+          <span class="badge">Hotel — from ${esc(it.sourceFileName)}</span>
+          <button class="icon-btn" onclick="removeStagedItem('${it.localId}')">✕</button>
+        </div>
+        <div class="field"><label>Country</label><input value="${esc(it.countryGuess||'')}" onchange="updateStaged('${it.localId}','countryGuess',this.value)"></div>
+        <div class="field"><label>Hotel name</label><input value="${esc(it.name||'')}" onchange="updateStaged('${it.localId}','name',this.value)"></div>
+        <div class="field"><label>Address</label><input value="${esc(it.address||'')}" onchange="updateStaged('${it.localId}','address',this.value)"></div>
+        <div class="field-row">
+          <div class="field"><label>Check-in</label><input type="date" value="${it.checkIn||''}" onchange="updateStaged('${it.localId}','checkIn',this.value)"></div>
+          <div class="field"><label>Check-out</label><input type="date" value="${it.checkOut||''}" onchange="updateStaged('${it.localId}','checkOut',this.value)"></div>
+        </div>
+        <div class="field"><label>Confirmation</label><input value="${esc(it.confirmationCode||'')}" onchange="updateStaged('${it.localId}','confirmationCode',this.value)"></div>
+      `;
+    }
+    box.appendChild(div);
+  });
+}
+function updateStaged(localId, field, value){
+  const it = stagedItems.find(x=>x.localId===localId);
+  if(it) it[field] = value;
+}
+function removeStagedItem(localId){
+  stagedItems = stagedItems.filter(x=>x.localId!==localId);
+  renderStagedItems();
+}
+
+function confirmImport(){
+  const tripId = document.getElementById('mImportTrip').value;
+  const trip = getTrip(tripId);
+  if(!trip){ toast('Select a trip', true); return; }
+
+  stagedItems.forEach(it=>{
+    let country = findCountryByName(trip, it.countryGuess);
+    if(!country){
+      country = { id: uid(), name: (it.countryGuess||'Unspecified').trim() || 'Unspecified', flights: [], hotels: [], forms: [], documents: [], notes: '' };
+      trip.countries.push(country);
+    }
+    if(it.type==='flight'){
+      country.flights.push({
+        id: uid(), completed:false,
+        direction: it.direction||'arrival', flightNumber: it.flightNumber||'', confirmationCode: it.confirmationCode||'',
+        from: it.from||'', to: it.to||'', date: it.date||'', time: it.time||'',
+        fileId: it.sourceFileId, fileName: it.sourceFileName,
+      });
+    } else {
+      country.hotels.push({
+        id: uid(), completed:false,
+        name: it.name||'', address: it.address||'', checkIn: it.checkIn||'', checkOut: it.checkOut||'',
+        confirmationCode: it.confirmationCode||'',
+        fileId: it.sourceFileId, fileName: it.sourceFileName,
+      });
+    }
+  });
+
+  activeTripId = trip.id;
+  activeCountryId = trip.countries[0]?.id || null;
+  toast(`Added ${stagedItems.length} item(s) to ${trip.name}`);
+  stagedItems = [];
+  queueSave(); closeModal(); render();
 }
 </script>
 </body>
