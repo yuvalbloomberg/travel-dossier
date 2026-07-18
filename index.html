@@ -59,6 +59,7 @@
   }
   .brand-name{font-family:'Spectral',serif;font-size:19px;font-weight:600;letter-spacing:0.2px;}
   .brand-sub{font-size:11px;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;}
+  .brand-version{font-size:10px;color:var(--muted-2);margin-top:1px;}
 
   .side-section{display:flex;flex-direction:column;gap:6px;}
   .side-label{
@@ -278,6 +279,26 @@
   .staged-item-head .badge{background:var(--surface-3);color:var(--muted);}
   .import-progress{font-size:12.5px;color:var(--muted);margin:10px 0;}
 
+  /* ---------- custom date picker (forced English / LTR) ---------- */
+  .date-field{cursor:pointer;font-family:'JetBrains Mono',monospace;}
+  .date-picker-popup{
+    direction:ltr;text-align:left;z-index:200;
+    background:#fff;border:1px solid var(--border-strong);border-radius:10px;
+    box-shadow:0 12px 30px rgba(20,20,15,0.18);padding:10px;width:230px;
+    font-family:'Inter',sans-serif;
+  }
+  .dp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px;font-weight:600;}
+  .dp-nav{border:none;background:var(--surface-2);width:24px;height:24px;border-radius:6px;cursor:pointer;color:var(--text);font-size:14px;}
+  .dp-nav:hover{background:var(--surface-3);}
+  .dp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+  .dp-dn{font-size:10px;color:var(--muted-2);text-align:center;padding:3px 0;font-weight:600;}
+  .dp-day{font-size:12px;text-align:center;padding:5px 0;border-radius:6px;cursor:pointer;}
+  .dp-day:hover{background:var(--surface-2);}
+  .dp-day.sel{background:var(--gold);color:#fff;font-weight:600;}
+  .dp-foot{display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
+  .dp-foot button{border:none;background:transparent;color:var(--gold);font-size:11.5px;cursor:pointer;font-weight:600;}
+  .dp-foot button:hover{text-decoration:underline;}
+
   ::-webkit-scrollbar{width:9px;height:9px;}
   ::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:20px;}
 
@@ -317,6 +338,7 @@
       <div>
         <div class="brand-name">Travel Dossier</div>
         <div class="brand-sub">Trip records</div>
+        <div class="brand-version mono" id="appVersionTag"></div>
       </div>
     </div>
 
@@ -325,7 +347,6 @@
       <div id="tripList"></div>
     </div>
     <button class="btn btn-gold btn-block" onclick="openTripModal()">+ New trip</button>
-    <button class="btn btn-teal btn-block" onclick="openImportModal()">⇧ Import documents</button>
 
     <div class="side-section">
       <div class="side-label">Travelers</div>
@@ -345,6 +366,7 @@
 
 <script>
 /* ==================== STATE & PERSISTENCE ==================== */
+const APP_VERSION = 'v1.1.0';
 let state = { travelers: [], trips: [] };
 let activeTripId = null;
 let activeCountryId = null;
@@ -352,6 +374,7 @@ let viewMode = 'journey'; // 'journey' | 'stops'
 let showCompleted = false;
 let cfg = { url: localStorage.getItem('td_url') || '', token: localStorage.getItem('td_token') || '' };
 let saveTimer = null;
+document.getElementById('appVersionTag').textContent = APP_VERSION;
 
 function uid(){ return crypto.randomUUID ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2); }
 
@@ -535,6 +558,7 @@ function render(){
         <div class="traveler-chips">${travelerChips}</div>
       </div>
       <div style="display:flex;gap:8px;">
+        <button class="btn btn-sm btn-teal" onclick="openImportModal('${trip.id}')">⇧ Import documents</button>
         <button class="btn btn-sm" onclick="openTripModal('${trip.id}')">Edit trip</button>
         <button class="btn btn-sm btn-red" onclick="deleteTrip('${trip.id}')">Delete</button>
       </div>
@@ -869,8 +893,8 @@ function openTripModal(tripId){
     <h3>${trip?'Edit trip':'New trip'}</h3>
     <div class="field"><label>Trip name</label><input id="mTripName" value="${esc(trip?.name||'')}" placeholder="e.g. Asia — Sales trip July 2026"></div>
     <div class="field-row">
-      <div class="field"><label>Start date</label><input id="mTripStart" type="date" value="${trip?.startDate||''}"></div>
-      <div class="field"><label>End date</label><input id="mTripEnd" type="date" value="${trip?.endDate||''}"></div>
+      <div class="field"><label>Start date</label><input id="mTripStart" type="text" class="date-field" readonly dir="ltr" lang="en" placeholder="YYYY-MM-DD" value="${trip?.startDate||''}" onclick="openDatePicker(this)"></div>
+      <div class="field"><label>End date</label><input id="mTripEnd" type="text" class="date-field" readonly dir="ltr" lang="en" placeholder="YYYY-MM-DD" value="${trip?.endDate||''}" onclick="openDatePicker(this)"></div>
     </div>
     <div class="field">
       <label>Travelers on this trip</label>
@@ -972,7 +996,7 @@ function openFlightModal(tripId, countryId, flightId){
       <div class="field"><label>To</label><input id="mFTo" value="${esc(f?.to||'')}" placeholder="SIN"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Date</label><input id="mFDate" type="date" value="${f?.date||''}"></div>
+      <div class="field"><label>Date</label><input id="mFDate" type="text" class="date-field" readonly dir="ltr" lang="en" placeholder="YYYY-MM-DD" value="${f?.date||''}" onclick="openDatePicker(this)"></div>
       <div class="field"><label>Time</label><input id="mFTime" type="time" value="${f?.time||''}"></div>
     </div>
     <div class="field">
@@ -1029,8 +1053,8 @@ function openHotelModal(tripId, countryId, hotelId){
     <div class="field"><label>Hotel name</label><input id="mHName" value="${esc(h?.name||'')}"></div>
     <div class="field"><label>Address</label><input id="mHAddress" value="${esc(h?.address||'')}"></div>
     <div class="field-row">
-      <div class="field"><label>Check-in</label><input id="mHIn" type="date" value="${h?.checkIn||''}"></div>
-      <div class="field"><label>Check-out</label><input id="mHOut" type="date" value="${h?.checkOut||''}"></div>
+      <div class="field"><label>Check-in</label><input id="mHIn" type="text" class="date-field" readonly dir="ltr" lang="en" placeholder="YYYY-MM-DD" value="${h?.checkIn||''}" onclick="openDatePicker(this)"></div>
+      <div class="field"><label>Check-out</label><input id="mHOut" type="text" class="date-field" readonly dir="ltr" lang="en" placeholder="YYYY-MM-DD" value="${h?.checkOut||''}" onclick="openDatePicker(this)"></div>
     </div>
     <div class="field"><label>Confirmation code</label><input id="mHConf" value="${esc(h?.confirmationCode||'')}"></div>
     <div class="field">
@@ -1223,23 +1247,112 @@ function removeTraveler(id){
   queueSave(); renderTravelerModalList(); render();
 }
 
+/* ==================== CUSTOM DATE PICKER (English, LTR) ==================== */
+const DP_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DP_DAYS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+let dpState = null;
+
+function openDatePicker(inputEl){
+  closeDatePicker();
+  const val = (inputEl.value || '').trim();
+  const parts = val.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const today = new Date();
+  dpState = {
+    inputEl,
+    year: parts ? parseInt(parts[1],10) : today.getFullYear(),
+    month: parts ? parseInt(parts[2],10)-1 : today.getMonth(),
+    selYear: parts ? parseInt(parts[1],10) : null,
+    selMonth: parts ? parseInt(parts[2],10)-1 : null,
+    selDay: parts ? parseInt(parts[3],10) : null,
+  };
+  const pop = document.createElement('div');
+  pop.id = 'datePickerPopup';
+  pop.className = 'date-picker-popup';
+  pop.setAttribute('dir','ltr');
+  pop.setAttribute('lang','en');
+  document.body.appendChild(pop);
+  const r = inputEl.getBoundingClientRect();
+  pop.style.position = 'fixed';
+  pop.style.top = Math.min(r.bottom+4, window.innerHeight-320) + 'px';
+  pop.style.left = Math.min(r.left, window.innerWidth-250) + 'px';
+  drawDatePicker();
+  setTimeout(()=>document.addEventListener('mousedown', dpOutsideClick), 0);
+}
+function dpOutsideClick(e){
+  const pop = document.getElementById('datePickerPopup');
+  if(pop && !pop.contains(e.target) && dpState && e.target !== dpState.inputEl){
+    closeDatePicker();
+  }
+}
+function closeDatePicker(){
+  const pop = document.getElementById('datePickerPopup');
+  if(pop) pop.remove();
+  document.removeEventListener('mousedown', dpOutsideClick);
+  dpState = null;
+}
+function drawDatePicker(){
+  if(!dpState) return;
+  const pop = document.getElementById('datePickerPopup');
+  const { year, month } = dpState;
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  let html = `<div class="dp-head">
+    <button type="button" class="dp-nav" onclick="dpChangeMonth(-1)">‹</button>
+    <div>${DP_MONTHS[month]} ${year}</div>
+    <button type="button" class="dp-nav" onclick="dpChangeMonth(1)">›</button>
+  </div>
+  <div class="dp-grid">` + DP_DAYS.map(dn=>`<div class="dp-dn">${dn}</div>`).join('');
+  for(let i=0;i<firstDay;i++) html += `<div></div>`;
+  for(let day=1; day<=daysInMonth; day++){
+    const isSel = dpState.selYear===year && dpState.selMonth===month && dpState.selDay===day;
+    html += `<div class="dp-day${isSel?' sel':''}" onclick="dpSelect(${day})">${day}</div>`;
+  }
+  html += `</div>
+  <div class="dp-foot"><button type="button" onclick="dpToday()">Today</button><button type="button" onclick="dpClear()">Clear</button></div>`;
+  pop.innerHTML = html;
+}
+function dpChangeMonth(delta){
+  dpState.month += delta;
+  if(dpState.month<0){ dpState.month=11; dpState.year--; }
+  if(dpState.month>11){ dpState.month=0; dpState.year++; }
+  drawDatePicker();
+}
+function dpSelect(day){
+  const y = dpState.year, m = dpState.month;
+  const value = `${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  const el = dpState.inputEl;
+  el.value = value;
+  closeDatePicker();
+  el.dispatchEvent(new Event('change', { bubbles:true }));
+}
+function dpToday(){
+  const t = new Date();
+  dpState.year = t.getFullYear(); dpState.month = t.getMonth();
+  dpSelect(t.getDate());
+}
+function dpClear(){
+  const el = dpState.inputEl;
+  el.value = '';
+  closeDatePicker();
+  el.dispatchEvent(new Event('change', { bubbles:true }));
+}
+
 /* ==================== IMPORT DOCUMENTS (extraction) ==================== */
 let stagedItems = []; // {localId, type, ...fields, sourceFileId, sourceFileName}
 
-function openImportModal(){
-  if(state.trips.length===0){
+function openImportModal(tripId){
+  const trip = getTrip(tripId || activeTripId);
+  if(!trip){
     toast('Create a trip first', true);
     return;
   }
   stagedItems = [];
-  const tripOptions = state.trips.map(t=>`<option value="${t.id}" ${t.id===activeTripId?'selected':''}>${esc(t.name)}</option>`).join('');
   showModal(`
-    <h3>Import documents</h3>
+    <h3>Import documents — ${esc(trip.name)}</h3>
     <p style="font-size:12.5px;color:var(--muted);margin-top:-8px;">
       Upload e-tickets, boarding passes, or hotel vouchers (PDF or image). The tool reads them and
       drafts the flights/hotels for you to review before adding.
     </p>
-    <div class="field"><label>Trip</label><select id="mImportTrip">${tripOptions}</select></div>
     <div class="field">
       <div class="file-drop" onclick="document.getElementById('mImportFiles').click()">Click to select one or more files</div>
       <input type="file" id="mImportFiles" style="display:none" accept="application/pdf,image/*" multiple>
@@ -1248,7 +1361,7 @@ function openImportModal(){
     <div id="importStaged"></div>
     <div class="modal-actions">
       <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-teal" id="importConfirmBtn" style="display:none" onclick="confirmImport()">Add all to trip</button>
+      <button class="btn btn-teal" id="importConfirmBtn" style="display:none" onclick="confirmImport('${trip.id}')">Add all to trip</button>
     </div>
   `, true);
   document.getElementById('mImportFiles').addEventListener('change', handleImportFiles);
@@ -1312,7 +1425,7 @@ function renderStagedItems(){
           <div class="field"><label>To</label><input value="${esc(it.to||'')}" onchange="updateStaged('${it.localId}','to',this.value)"></div>
         </div>
         <div class="field-row">
-          <div class="field"><label>Date</label><input type="date" value="${it.date||''}" onchange="updateStaged('${it.localId}','date',this.value)"></div>
+          <div class="field"><label>Date</label><input type="text" class="date-field" readonly dir="ltr" lang="en" placeholder="YYYY-MM-DD" value="${it.date||''}" onclick="openDatePicker(this)" onchange="updateStaged('${it.localId}','date',this.value)"></div>
           <div class="field"><label>Time</label><input type="time" value="${it.time||''}" onchange="updateStaged('${it.localId}','time',this.value)"></div>
         </div>
       `;
@@ -1326,8 +1439,8 @@ function renderStagedItems(){
         <div class="field"><label>Hotel name</label><input value="${esc(it.name||'')}" onchange="updateStaged('${it.localId}','name',this.value)"></div>
         <div class="field"><label>Address</label><input value="${esc(it.address||'')}" onchange="updateStaged('${it.localId}','address',this.value)"></div>
         <div class="field-row">
-          <div class="field"><label>Check-in</label><input type="date" value="${it.checkIn||''}" onchange="updateStaged('${it.localId}','checkIn',this.value)"></div>
-          <div class="field"><label>Check-out</label><input type="date" value="${it.checkOut||''}" onchange="updateStaged('${it.localId}','checkOut',this.value)"></div>
+          <div class="field"><label>Check-in</label><input type="text" class="date-field" readonly dir="ltr" lang="en" placeholder="YYYY-MM-DD" value="${it.checkIn||''}" onclick="openDatePicker(this)" onchange="updateStaged('${it.localId}','checkIn',this.value)"></div>
+          <div class="field"><label>Check-out</label><input type="text" class="date-field" readonly dir="ltr" lang="en" placeholder="YYYY-MM-DD" value="${it.checkOut||''}" onclick="openDatePicker(this)" onchange="updateStaged('${it.localId}','checkOut',this.value)"></div>
         </div>
         <div class="field"><label>Confirmation</label><input value="${esc(it.confirmationCode||'')}" onchange="updateStaged('${it.localId}','confirmationCode',this.value)"></div>
       `;
@@ -1344,10 +1457,9 @@ function removeStagedItem(localId){
   renderStagedItems();
 }
 
-function confirmImport(){
-  const tripId = document.getElementById('mImportTrip').value;
+function confirmImport(tripId){
   const trip = getTrip(tripId);
-  if(!trip){ toast('Select a trip', true); return; }
+  if(!trip){ toast('Trip not found', true); return; }
 
   stagedItems.forEach(it=>{
     let country = findCountryByName(trip, it.countryGuess);
